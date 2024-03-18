@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image";
 import Link from "next/link"
 import { Key } from "lucide-react"
@@ -7,15 +8,49 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-
+import { useEffect, useState } from "react";
+import { SupabaseClient, createClient } from '@supabase/supabase-js'
+let supabase:SupabaseClient<any, "string", any>
+const supabaseUrl = 'https://cozwvhycpghwqquezuxs.supabase.co'
+const supabaseKey:string = process.env.NEXT_PUBLIC_SUPABASE_KEY || ""
+supabase = createClient(supabaseUrl, supabaseKey)
 export default function Home() {
+  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [password2, setPassword2] = useState("")
+  const [errorLogin, setErrorLogin] = useState("")
+  const [errorRegister, setErrorRegister] = useState("")
+  async function login(){
+    setErrorLogin("")
+    supabase.auth.signOut()
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: username,
+      password: password,
+    })
+    if(error) return setErrorLogin(error.message)
+    console.log(data)
+    supabase.auth.signOut()
+  }
+  async function register(){
+    setErrorRegister("")
+    supabase.auth.signOut()
+    if(password !== password2) return setErrorRegister("Your password doesn't match")
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    })
+    if(error) return setErrorRegister(error.message)
+    console.log(data)
+    supabase.auth.signOut()
+  }
   return (
-    <div className="h-screen relative w-full overflow-hidden bg-green-50 flex flex-col items-center justify-center ">
-      <div className="absolute inset-0 w-full h-full bg-green-50 z-20 [mask-image:radial-gradient(transparent,white)] pointer-events-none" />
+    <div className="w-full overflow-hidden bg-green-50 flex flex-col items-center justify-center pb-16 -my-16">
+      <div className="absolute inset-0 w-full h-full bg-green-50 z-20 [mask-image:radial-gradient(transparent,transparent)] pointer-events-none" />
       <Boxes />
-      <div className="flex flex-row items-center content-center flex-wrap">
+      <div className="flex flex-row items-center content-center flex-wrap lg:flex-no-wrap -pt-8">
 
-        <div className="m-32 ABSOLUTEZINDEX">
+        <div className="m-32 ABSOLUTEZINDEX w-screen lg:w-auto flex flex-col items-center content-center">
           <div className="bg-white z-20 m-8">
             <Image src={"/upni.svg"} width={200} height={200} alt="UPN Insight Logo" className="z-20" style={{ zIndex: 20, color: "#000" }} />
           </div>
@@ -26,7 +61,7 @@ export default function Home() {
             Talks, News, and Discussion
           </p>
         </div>
-        <div className="bg-white rounded-lg min-h-48 min-w-64 z-20 m-32 border-solid border border-gray-300">
+        <div className="bg-white rounded-lg min-h-48 md:min-w-32 lg:min-w-64 z-20 m-auto sm:m-auto xl:m-32 lg:m-16 lg:mx-8 border-solid border border-gray-300">
           <h1 className="text-center m-8 text-black text-xl md:text-2xl">Masuk ke Halaman Utama</h1>
           <Tabs defaultValue="login" className="w-[400px] m-4">
             <TabsList className="grid w-full grid-cols-2">
@@ -39,14 +74,15 @@ export default function Home() {
               </p>
               <div className="space-y-1">
                 <Label htmlFor="id">Email / NIM</Label>
-                <Input id="id" placeholder="mahasiswa@upnv.ac.id" />
+                <Input id="id" placeholder="user@mail.com" onChange={(x)=>{setUsername(x.target.value)}}/>
               </div>
               <div className="space-y-1">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="********" />
+                <Input id="password" type="password" placeholder="********" onChange={(x)=>{setPassword(x.target.value)}} />
               </div>
               <Link href="/forgot" className="text-gray-500 text-xs">Forgot Password</Link>
-              <Button className="my-4" style={{ marginLeft: "70%" }}><Key className="mr-2 h-4 w-4" />Login</Button>
+              <p className="text-red-500 text-sm">{errorLogin}</p>
+              <Button onClick={login} className="my-4" style={{ marginLeft: "70%" }}><Key className="mr-2 h-4 w-4" />Login</Button>
             </TabsContent>
             <TabsContent value="register" className="px-8 inline-block">
               <p className="text-sm text-gray-500 mb-4 mt-0">
@@ -55,21 +91,22 @@ export default function Home() {
 
               <div className="space-y-1 mt-2">
                 <Label htmlFor="id">Email</Label>
-                <Input id="id" placeholder="mahasiswa@upnv.ac.id" />
+                <Input id="id" placeholder="user@mail.com" onChange={(x)=>{setEmail(x.target.value)}} />
               </div>
               <div className="space-y-1 mt-2">
                 <Label htmlFor="nim">NIM</Label>
-                <Input id="nim" placeholder="2310123456" />
+                <Input id="nim" placeholder="2310123456" onChange={(x)=>{setUsername(x.target.value)}}/>
               </div>
               <div className="space-y-1 mt-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="********" />
+                <Input id="password" type="password" placeholder="********" onChange={(x)=>{setPassword(x.target.value)}}/>
               </div>
               <div className="space-y-1 mt-2">
                 <Label htmlFor="rpassword">Retype Password</Label>
-                <Input id="rpassword" type="password" placeholder="********" />
+                <Input id="rpassword" type="password" placeholder="********" onChange={(x)=>{setPassword2(x.target.value)}}/>
               </div>
-              <Button className="my-4" style={{ marginLeft: "70%" }}><Key className="mr-2 h-4 w-4" />Register</Button>
+              <p className="text-red-500 text-sm">{errorRegister}</p>
+              <Button onClick={register} className="my-4" style={{ marginLeft: "70%" }}><Key className="mr-2 h-4 w-4" />Register</Button>
             </TabsContent>
           </Tabs>
         </div>

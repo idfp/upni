@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
  
 export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
-  const rows = new Array(150).fill(1);
-  const cols = new Array(100).fill(1);
+  const rows = new Array(75).fill(1);
+  const cols = new Array(50).fill(1);
   let colors = [
     "#FBD5D5",
     "#FDF6B2",
@@ -25,9 +25,10 @@ export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
     <div
       style={{
         transform: `translate(-40%,-60%) skewX(-48deg) skewY(14deg) scale(0.675) rotate(0deg) translateZ(0)`,
+        top:"-300px"
       }}
       className={cn(
-        "absolute left-1/4 p-4 -top-1/4 flex  -translate-x-1/2 -translate-y-1/2 w-full h-full",
+        "relative left-1/2 p-4 flex -translate-x-1/2 -translate-y-1/2 w-full h-full",
         className
       )}
       {...rest}
