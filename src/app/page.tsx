@@ -9,40 +9,45 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react";
-import { SupabaseClient, createClient } from '@supabase/supabase-js'
-let supabase:SupabaseClient<any, "string", any>
-const supabaseUrl = 'https://cozwvhycpghwqquezuxs.supabase.co'
-const supabaseKey:string = process.env.NEXT_PUBLIC_SUPABASE_KEY || ""
-supabase = createClient(supabaseUrl, supabaseKey)
+import { useRouter } from 'next/navigation'
 export default function Home() {
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [password2, setPassword2] = useState("")
   const [errorLogin, setErrorLogin] = useState("")
+  const router = useRouter()
   const [errorRegister, setErrorRegister] = useState("")
   async function login(){
     setErrorLogin("")
-    supabase.auth.signOut()
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: username,
-      password: password,
+    const req = await fetch("/api/login", {
+      method: "POST",
+      body: JSON.stringify({ username, password })
     })
-    if(error) return setErrorLogin(error.message)
-    console.log(data)
-    supabase.auth.signOut()
+    const res = await req.json()
+    if(res.status === "success"){
+      return router.push("/app")
+    }
+    if(res.reason === "invalid credential"){
+      return setErrorLogin("Password / Email Salah!")
+    }
+    setErrorLogin("Login gagal")
   }
   async function register(){
     setErrorRegister("")
-    supabase.auth.signOut()
-    if(password !== password2) return setErrorRegister("Your password doesn't match")
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
+    if(password !== password2) return setErrorRegister("Password tidak sesuai!")
+    const req = await fetch("/api/register", {
+      method: "POST",
+      body: JSON.stringify({ email, username, password })
     })
-    if(error) return setErrorRegister(error.message)
-    console.log(data)
-    supabase.auth.signOut()
+    const res = await req.json()
+    if(res.status === "success"){
+      return router.push("/app")
+    }
+    if(res.reason === "email already used"){
+      return setErrorRegister("Email sudah digunakan oleh user lain!")
+    }
+    return setErrorRegister("Register gagal")
   }
   return (
     <div className="w-full overflow-hidden bg-green-50 flex flex-col items-center justify-center pb-16 -my-16">
@@ -78,7 +83,11 @@ export default function Home() {
               </div>
               <div className="space-y-1">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="********" onChange={(x)=>{setPassword(x.target.value)}} />
+                <Input id="password" type="password" placeholder="********" onChange={(x)=>{setPassword(x.target.value)}} onKeyDown={(e)=>{
+                  if(e.key === "Enter"){
+                    login()
+                  }
+                }}/>
               </div>
               <Link href="/forgot" className="text-gray-500 text-xs">Forgot Password</Link>
               <p className="text-red-500 text-sm">{errorLogin}</p>
@@ -103,7 +112,11 @@ export default function Home() {
               </div>
               <div className="space-y-1 mt-2">
                 <Label htmlFor="rpassword">Retype Password</Label>
-                <Input id="rpassword" type="password" placeholder="********" onChange={(x)=>{setPassword2(x.target.value)}}/>
+                <Input id="rpassword" type="password" placeholder="********" onChange={(x)=>{setPassword2(x.target.value)}} onKeyDown={(e)=>{
+                  if(e.key === "Enter"){
+                    register()
+                  }
+                }}/>
               </div>
               <p className="text-red-500 text-sm">{errorRegister}</p>
               <Button onClick={register} className="my-4" style={{ marginLeft: "70%" }}><Key className="mr-2 h-4 w-4" />Register</Button>
