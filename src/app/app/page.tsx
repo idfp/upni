@@ -12,14 +12,6 @@ import { Search } from "lucide-react";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
 
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import {
     Select,
     SelectContent,
     SelectGroup,

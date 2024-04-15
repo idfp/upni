@@ -9,4 +9,7 @@ export type Post = {
     views: number;
     createdAt: Date;
     category: string;
+    profilePicture: string;
+    isUpnMember: boolean;
+    role: string;
 }
