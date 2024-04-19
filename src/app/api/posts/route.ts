@@ -8,14 +8,18 @@ import { NextRequest, NextResponse } from "next/server"
 export async function GET(req:Request){
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
+    const addViews = searchParams.get('addViews')
+    if(addViews === 'true'){
+    }
     if(id !== null){
         const res = await conn.query("SELECT posts.id as id, posts.title as title, posts.content as content, users.name as author, posts.pictures as pictures, posts.likes as likes, posts.comments as comments, posts.views as views, posts.created_at as \"createdAt\", posts.category as category, users.is_upn_member as \"isUpnMember\", users.profile_picture as \"profilePicture\", users.role as role FROM posts INNER JOIN users ON posts.author = users.id WHERE posts.id = $1 ORDER BY posts.id DESC", [id]);
+        conn.query("UPDATE posts SET views = views + 1 WHERE id = $1", [id])
         const posts = res.rows
         const responses = posts.map(post=>{
             post.pictures = JSON.parse(post.pictures)
             return post
         })
-
+        
         return Response.json(responses[0])
     }
 

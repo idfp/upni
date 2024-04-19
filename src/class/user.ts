@@ -15,7 +15,7 @@ export type User = {
     email: string;
     username: string;
     name: string;
-    isUpnMember: boolean;
+    isUPNMember: boolean;
     profilePicture: string;
     createdAt: Date;
     role: string;
@@ -28,7 +28,7 @@ export const defaultUser = {
     email: "user@mail.com",
     username: "2312345678",
     name: "Mahasiswa UPN",
-    isUpnMember: true,
+    isUPNMember: true,
     profilePicture: "https://cozwvhycpghwqquezuxs.supabase.co/storage/v1/object/public/store/default_avatar.svg?t=2024-03-18T06%3A44%3A56.263Z",
     createdAt: new Date(),
     role: "USER",
