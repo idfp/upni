@@ -81,6 +81,12 @@ export function Navbar() {
                     <Button type="submit" className="-ml-12"><Search className="h-4 w-4" /></Button>
                 </div>
                 <div className="grow flex justify-end">
+                    <Link href="/author/new">
+                        <Button className="mr-4">
+                            <Pencil className="w-4 h-4 mr-2" />
+                            New Post
+                        </Button>
+                    </Link>
                     <DialogTrigger>
                         <Avatar className="cursor-pointer" onClick={() => { console.log("Avatar Clicked") }}>
                             <AvatarImage src={user ? user.profilePicture : ""} alt={user ? user.name : ''} />

@@ -2,7 +2,7 @@ export type Post = {
     id: number;
     title: string;
     content: string;
-    author: number;
+    author: string | number;
     pictures: string[];
     likes: number;
     comments: number;
@@ -10,6 +10,7 @@ export type Post = {
     createdAt: Date;
     category: string;
     profilePicture: string;
+    timediff: string;
     isUpnMember: boolean;
     role: string;
 }
