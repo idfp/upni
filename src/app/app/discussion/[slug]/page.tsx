@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Paperclip, Send, Trash2, Heart, GanttChart, MessageCircle, CircleX } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
-import { useRouter} from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 import Image from "next/image";
 
@@ -40,18 +40,18 @@ export default function Discussion({ params }: { params: { slug: string } }) {
                 id: post?.id
             })
         })).json()
-        setComments([...comments, {
-            id: 0, 
-            content: comment, 
-            createdAt: new Date(), 
-            posttype: "DISCUSSION", 
+        setComments([{
+            id: 0,
+            content: comment,
+            createdAt: new Date(),
+            posttype: "DISCUSSION",
             author: user.name,
             authorid: user.id,
             role: user.role,
             isUpnMember: user.isUPNMember,
             profilePicture: user.profilePicture,
             timediff: "Just right now"
-        }])
+        }, ...comments])
         setComment("")
     }
     async function toggleLike() {
@@ -124,6 +124,7 @@ export default function Discussion({ params }: { params: { slug: string } }) {
                 method: "GET",
                 credentials: "include"
             })).json()
+            comments.reverse()
             setComments(comments)
 
             comments.forEach((comment: Comment, id) => {
@@ -171,16 +172,16 @@ export default function Discussion({ params }: { params: { slug: string } }) {
     return (<>
         <div className="flex flex-row">
             <div className="flex pl-20 bg-black fixed" style={{ width: "60vw", height: "100vh" }}>
-                <Button variant="link" className="fixed top-4 left-4" onClick={()=>{router.back()}}>
+                <Button variant="link" className="fixed top-4 left-4" onClick={() => { router.back() }}>
                     <CircleX color="white" />
                 </Button>
                 <Carousel className="h-full ">
-                    <CarouselContent className="h-full" style={{ marginTop: "10vh"}}>
+                    <CarouselContent className="h-full" style={{ marginTop: "10vh", width:"55vw" }}>
                         {
                             post?.pictures.map((picture, ind) => {
                                 return <>
                                     <CarouselItem key={ind}>
-                                        <img src={picture} style={{width:"55vw" }} className="mx-auto my-auto" />
+                                        <img src={picture} style={{ maxHeight:"80vh"}} className="mx-auto my-auto" />
                                     </CarouselItem>
                                 </>
                             })
@@ -190,26 +191,24 @@ export default function Discussion({ params }: { params: { slug: string } }) {
                     <CarouselNext className="bg-white" />
                 </Carousel>
             </div>
-            <div className="bg-black fixed" style={{ width: "5vw", height:"100vh", right: "35vw", zIndex:"-1"}}>
+            <div className="bg-black fixed" style={{ width: "5vw", height: "100vh", right: "35vw", zIndex: "-1" }}>
 
             </div>
-            <div className="grow p-8 absolute right-0" style={{ maxWidth: "35vw" }}>
+            <div className="grow p-8 absolute right-0" style={{ maxWidth: "35vw", minWidth: "35vw" }}>
                 {post === undefined ?
                     <></>
                     :
                     <>
                         <div className="flex flex-row mt-4 max-w-[800px] mx-auto space-x-2">
                             <Avatar className="cursor-pointer h-14 w-14" onClick={() => { console.log("Avatar Clicked") }}>
-                                <AvatarImage src={post.profilePicture} alt={post.author + ''} />
-                                <AvatarFallback>ID</AvatarFallback>
+                                <img className="rounded-full" src={post.profilePicture} alt={post.author + ''} />
                             </Avatar>
                             <div className="mt-1">
-                                <span className="text-gray-800 mr-4">{post.author}</span>
+                                <span className="text-gray-800 mr-4">{post.author}</span><br />
                                 <span className="text-gray-500 mr-4">{post.createdAt.toLocaleString().substring(0, post.createdAt.toLocaleString().length - 8).replace("T", " ")} - {timediff}</span><br />
                             </div>
                         </div>
-                        <p className="ml-16 -mt-5 mb-2">
-                            {post.content}
+                        <p className="ml-16 mb-2" dangerouslySetInnerHTML={{__html: post.content}}>
                         </p>
                         <div className="flex flex-row items-center space-x-3 ml-16 mb-4">
                             <div className="flex flex-row items-center">
@@ -244,25 +243,24 @@ export default function Discussion({ params }: { params: { slug: string } }) {
                             <Send className="mr-2 h-4 w-4" />
                             Kirim
                         </Button>
-                        <div style={{maxWidth: "30vw", lineBreak:"auto", wordBreak:"break-all"}}>
-                        {
-                            comments?.length == 0 ?
-                                <span className="font-sans text-md text-gray-500">Tidak ada komentar untuk saat ini...</span>
-                                :
-                                comments.map(comment => (<>
-                                    <div className="flex flex-row mt-2">
-                                        <Avatar className="h-14 w-14 mr-2 rounded-lg" style={{borderRadius:"9999px !important"}}>
-                                            <AvatarImage src={comment.profilePicture} alt={comment ? comment.author : ''} />
-                                            <AvatarFallback>ID</AvatarFallback>
-                                        </Avatar>
-                                        <div style={{maxWidth: "25vw"}}>
-                                            <h3 className="font-sans font-bold mt-1">{comment.author} <span className="font-normal ">- {comment.timediff}</span></h3>
-                                            <p>{comment.content}</p>
+                        <div style={{ maxWidth: "30vw", lineBreak: "auto", wordBreak: "break-all" }}>
+                            {
+                                comments?.length == 0 ?
+                                    <span className="font-sans text-md text-gray-500">Tidak ada komentar untuk saat ini...</span>
+                                    :
+                                    comments.map(comment => (<>
+                                        <div className="flex flex-row mt-2">
+                                            <Avatar className="h-14 w-14 mr-2 rounded-lg" style={{ borderRadius: "9999px !important" }}>
+                                                <img className="rounded-full" src={comment.profilePicture} alt={comment ? comment.author : ''} />
+                                            </Avatar>
+                                            <div style={{ maxWidth: "25vw" }}>
+                                                <h3 className="font-sans font-bold mt-1">{comment.author} <span className="font-normal ">- {comment.timediff}</span></h3>
+                                                <p>{comment.content}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <Separator className="m-4"/>
-                                </>))
-                        }
+                                        <Separator className="m-4" />
+                                    </>))
+                            }
                         </div>
                     </>
                 }

@@ -84,7 +84,7 @@ export function Navbar() {
                     <Link href="/author/new">
                         <Button className="mr-4">
                             <Pencil className="w-4 h-4 mr-2" />
-                            New Post
+                            Author
                         </Button>
                     </Link>
                     <DialogTrigger>

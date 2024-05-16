@@ -119,3 +119,35 @@ export async function POST(request: NextRequest) {
         id: postId
     })
 }
+
+export async function PUT(req: NextRequest){
+    const token = req.cookies.get('token')?.value
+    if (token === undefined)
+        throw Error
+    const claims = decodeJwt(token)
+    const { id, content, title } = await req.json()
+    if (id === undefined || id === null) {
+        return Response.json({ status: "fail" })
+    }
+    if (content === undefined || content === null) {
+        return Response.json({ status: "fail" })
+    }
+    let query = "UPDATE posts SET content = $1 WHERE id = $2 AND author = $3"
+    let data = [content, id, claims.id]
+    if(title !== undefined && title !== null){
+        query = "UPDATE posts SET content = $1, title = $2 WHERE id = $3 AND author = $4"
+        data = [content, title, id, claims.id]
+    }
+    const res = await conn.query(query, data)
+    return Response.json({status: "ok"}) 
+}
+
+export async function DELETE(req: NextRequest){
+    const token = req.cookies.get('token')?.value
+    if (token === undefined)
+        throw Error
+    const claims = decodeJwt(token)
+    const { id } = await req.json()
+    const res = await conn.query("DELETE FROM posts WHERE id = $1 AND author = $2", [id, claims.id])
+    return Response.json({status: "ok"}) 
+}

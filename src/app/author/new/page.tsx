@@ -71,7 +71,7 @@ export default function NewPost() {
         }
         const res = await (await fetch("/api/draft", {
             body: JSON.stringify({
-                body: text,
+                body: value,
                 header,
                 title
             }),
@@ -96,7 +96,7 @@ export default function NewPost() {
         setSaveState("Publishing...")
         const res = await (await fetch("/api/posts", {
             body: JSON.stringify({
-                body: text,
+                body: value,
                 header,
                 title
             }),
@@ -146,7 +146,10 @@ export default function NewPost() {
                                 plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown',
                                 toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
                                 tinycomments_mode: 'embedded',
-                                menubar: ''
+                                menubar: '',
+                                images_upload_url: '/api/image',
+                                images_reuse_filename: true,
+                                automatic_uploads: true
                             }}
                             onEditorChange={(newValue, editor) => onEditorInputChange(newValue, editor)}
                             onInit={(evt, editor) => setText(editor.getContent({ format: "text" }))}
