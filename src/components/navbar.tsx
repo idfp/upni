@@ -3,9 +3,9 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
-import { getCookie } from "@/lib/getCookie";
+import { getCookie, deleteCookie } from "@/lib/getCookie";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import { Search, Pencil, Save } from "lucide-react"
+import { Search, Pencil, Save, LogOut } from "lucide-react"
 import {
     Dialog,
     DialogContent,
@@ -18,13 +18,20 @@ import {
 import { base64ArrayBuffer } from "@/lib/buffertobase64"
 import { Label } from "@/components/ui/label"
 import { useEffect, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
 
-export function Navbar() {
+interface NavbarProps {
+    query?: string;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ query = "" }) => {
     const [user, setUser] = useState<User>(defaultUser)
     const [name, setName] = useState(user.name)
     const [username, setUserName] = useState(user.username)
     const [email, setEmail] = useState(user.email)
     const fileInput = useRef<HTMLInputElement>(null)
+    const [searchValue, setSearch] = useState(query)
+    const router = useRouter()
 
     useEffect(() => {
         const token = getCookie("token");
@@ -58,6 +65,21 @@ export function Navbar() {
             setUser({ ...user, profilePicture: res.link })
         }
     }
+    async function signout(){
+        deleteCookie("token")
+        router.push("/")
+    }
+    async function search() {
+        router.push("/app/search/" + searchValue)
+    }
+    async function inputOnKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+        if (event.key === 'Enter') {
+            search()
+        }
+    }
+    async function inputOnChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setSearch(event.target.value)
+    }
     return (
         <Dialog>
             <div className="w-auto m-2 border-gray-300 border rounded-md h-14 flex flex-row p-1 px-4 items-center">
@@ -77,11 +99,11 @@ export function Navbar() {
                 </div>
                 <div className="grow-2"></div>
                 <div className="grow flex w-full max-w-sm items-center">
-                    <Input type="text" placeholder="Search Post / Podcast" />
-                    <Button type="submit" className="-ml-12"><Search className="h-4 w-4" /></Button>
+                    <Input type="text" placeholder="Search Post / Podcast" onChange={inputOnChange} value={searchValue} onKeyDown={inputOnKeyDown} />
+                    <Button type="submit" className="-ml-12" onClick={search}><Search className="h-4 w-4" /></Button>
                 </div>
                 <div className="grow flex justify-end">
-                    <Link href="/author/new">
+                    <Link href="/author/">
                         <Button className="mr-4">
                             <Pencil className="w-4 h-4 mr-2" />
                             Author
@@ -119,9 +141,10 @@ export function Navbar() {
                         <Label htmlFor="username">Username</Label>
                         <Input value={username} disabled={user.isUPNMember} onChange={(val) => { setUserName(val.target.value) }} className="mt-2" type="text" id="username" placeholder="username" />
                     </div>
-                    <div className="ml-auto mt-4">
-                        <DialogClose asChild>
-                            <Button className="" onClick={changeInfo}>
+                    <div className="mt-4 flex flex-row space-x-2">
+                        <Button className="ml-4" variant={"outline"} onClick={signout}><LogOut className="h-4 w-4 mr-2" />Sign Out</Button>
+                        <DialogClose asChild style={{marginLeft:"35%"}}>
+                            <Button onClick={changeInfo}>
                                 <Save className="h-4 w-4 mr-2" />
                                 Save
                             </Button>

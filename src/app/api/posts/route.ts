@@ -1,20 +1,31 @@
 import conn from "@/lib/db"
-import { createHash } from "crypto"
-import { ServerUser } from "@/class/user"
 import { SignJWT, decodeJwt } from "jose"
-import { getJwtSecretKey } from "@/lib/auth"
 import { NextRequest, NextResponse } from "next/server"
-import { Post } from "@/class/post"
 import { createClient } from '@supabase/supabase-js'
+
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || "",
     process.env.NEXT_PUBLIC_SUPABASE_KEY || ""
 )
+
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url)
     const type = searchParams.get('type')
     if (type !== null && type === "discussion") {
         const res = await conn.query("SELECT posts.id as id, posts.title as title, posts.content as content, users.name as author, posts.pictures as pictures, posts.likes as likes, posts.comments as comments, posts.views as views, posts.created_at as \"createdAt\", posts.category as category, users.is_upn_member as \"isUpnMember\", users.profile_picture as \"profilePicture\", users.role as role FROM posts INNER JOIN users ON posts.author = users.id WHERE category = 'DISCUSSION' ORDER BY posts.id DESC LIMIT 20");
+        const posts = res.rows
+        const responses = posts.map(post => {
+            post.pictures = JSON.parse(post.pictures)
+            return post
+        })
+        return Response.json(responses)
+    }
+    const user = searchParams.get("user")
+    if(user !== null){
+        if(isNaN(Number.parseInt(user))){
+            return Response.json({status: "fail"})
+        }
+        const res = await conn.query("SELECT posts.id as id, posts.title as title, posts.content as content, users.name as author, posts.pictures as pictures, posts.likes as likes, posts.comments as comments, posts.views as views, posts.created_at as \"createdAt\", posts.category as category, users.is_upn_member as \"isUpnMember\", users.profile_picture as \"profilePicture\", users.role as role FROM posts INNER JOIN users ON posts.author = users.id WHERE posts.author = $1 ORDER BY posts.id DESC LIMIT 20", [user]);
         const posts = res.rows
         const responses = posts.map(post => {
             post.pictures = JSON.parse(post.pictures)

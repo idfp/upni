@@ -25,7 +25,7 @@ export async function GET(req: Request) {
         const comments = res.rows
         
         return Response.json(comments)
-    }
+    } 
 }
 export async function POST(request: NextRequest) {
     try{

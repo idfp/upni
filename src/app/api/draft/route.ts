@@ -15,6 +15,7 @@ export async function GET(req:NextRequest){
         throw Error 
     const claims = decodeJwt(token)
     const drafts = getDrafts()
+    console.log(drafts)
     if(id !== null){
         if(drafts[id].author == claims.id){
             return Response.json(drafts[id])
@@ -23,7 +24,7 @@ export async function GET(req:NextRequest){
     let returnedDrafts:Array<Post> = [];
     drafts.forEach((draft)=>{
         if(draft === null) return
-        if(draft.author == claims.id){
+        if(draft.author == claims.name){
             returnedDrafts.push(draft)
         }
     })
@@ -93,4 +94,18 @@ export async function POST(request: NextRequest){
     }
     const drafts = addDraft(post)
     return Response.json({status: "ok", id: drafts.length - 1})
+}
+
+export async function DELETE(req: NextRequest){
+    const { id } = await req.json()
+    const token = req.cookies.get("token")?.value
+    if(token === undefined) throw Error
+    const claims = decodeJwt(token)
+    const drafts = getDrafts()
+
+    if(drafts[id]?.author == claims.id){
+        removeDraft(id)
+        return Response.json({status: "ok"})
+    }
+    return Response.json({status:"fail", reason:"unauthorized"})
 }

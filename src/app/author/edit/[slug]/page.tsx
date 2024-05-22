@@ -20,21 +20,8 @@ const Overlay = () => {
         </div>
     );
 };
-function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
-    let timeout: ReturnType<typeof setTimeout> | null;
-    return function(this: ThisParameterType<T>, ...args: Parameters<T>) {
-        if (timeout !== null) {
-            clearTimeout(timeout);
-        }
-        timeout = setTimeout(() => {
-            timeout = null;
-            func.apply(this, args);
-        }, wait);
-    };
-}
 
-
-export default function NewPost() {
+export default function EditPost({ params }: { params: { slug: string } }) {
     const [title, setTitle] = useState("Judul")
     const [header, setHeader] = useState("/add-image.jpg")
     const inputRef = useRef<HTMLInputElement>(null)
@@ -46,11 +33,11 @@ export default function NewPost() {
     const searchParams = useSearchParams()
     useEffect(() => {
         (async () => {
-            const draftid = searchParams.get("draftid")
-            if (draftid === null) return
-            if (isNaN(Number.parseInt(draftid))) return
-            setId(Number.parseInt(draftid))
-            const res:Post = await (await fetch("/api/draft?id=" + draftid, {
+            const postid = params.slug
+
+            if (isNaN(Number.parseInt(postid))) return
+            setId(Number.parseInt(postid))
+            const res:Post = await (await fetch("/api/posts?id=" + postid, {
                 method: "GET",
                 credentials: "include"
             })).json()
@@ -61,33 +48,7 @@ export default function NewPost() {
     }, [])
 
 
-    const saveDraft = async () => {
-        setSaveState("Saving...")
-        let method = "POST"
-        if(id !== -1){
-            method = "PUT"
-        }
-        const res = await (await fetch("/api/draft?id="+id, {
-            body: JSON.stringify({
-                body: value,
-                header,
-                title
-            }),
-            credentials: "include",
-            method,
-        })).json()
-        if (res.status === "ok") {
-            toast("Berhasil menyimpan draft.")
-            if(res.id){
-                setId(Number.parseInt(res.id))
-            }
-            return setSaveState("Saved")
-        }
-        toast("Gagal menyimpan draft.")
-        setSaveState("Error Saving...")
-
-    }
-    const debouncedAutosave = debounce(saveDraft, 2000);
+   
     const uploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files === null) {
             return
@@ -101,30 +62,31 @@ export default function NewPost() {
         })).json()
         if (res.status === "ok") {
             setHeader(res.location)
-            debouncedAutosave();
+
         }
     }
     const onEditorInputChange = (newValue, editor) => {
         setValue(newValue)
         setText(editor.getContent({ format: "text" }))
-        debouncedAutosave();
+
     }
     const publish = async () => {
         setSaveState("Publishing...")
         const res = await (await fetch("/api/posts", {
             body: JSON.stringify({
-                body: value,
+                id: id,
+                content: value,
                 header,
                 title
             }),
             credentials: "include",
-            method: "POST",
+            method: "PUT",
         })).json()
         if (res.status === "ok") {
             setSaveState("Published")
-            toast("Berhasil mengunggah berita.")
+            toast("Berhasil mengedit berita.")
             setTimeout(() => {
-                router.push("/app/news/" + res.id)
+                router.push("/app/news/" + id)
             }, 500)
             return
         }
@@ -134,14 +96,9 @@ export default function NewPost() {
         <Navbar />
         <div className="px-10 py-2">
 
-            <h1 className="font-sans text-xl sm:text-2xl lg:text-4xl font-normal">Unggah Konten</h1>
+            <h1 className="font-sans text-xl sm:text-2xl lg:text-4xl font-normal">Edit Post</h1>
 
-            <Tabs defaultValue="news" className="w-full mt-4">
-                <TabsList className="grid w-full grid-cols-2 max-w-[400px]">
-                    <TabsTrigger value="news">News</TabsTrigger>
-                    <TabsTrigger value="podcast">Podcast</TabsTrigger>
-                </TabsList>
-                <TabsContent value="news" className="px-8 py-2">
+                <div className="px-8 py-2">
                     <div className="max-w-[800px] mx-auto">
                         <input className="hidden" type="file" ref={inputRef} onChange={uploadImage} />
                         <div className="relative cursor-pointer" onClick={() => { inputRef.current?.click() }}>
@@ -156,7 +113,7 @@ export default function NewPost() {
                             <Overlay />
                         </div>
         
-                        <AutoResizableTextarea autoFocus placeholder="Tulis Judul Disini" className="mb-12 w-full mt-8 h-12 font-sans text-xl sm:text-2xl lg:text-4xl font-bold focus:border-none focus:outline-none" value={title} onChange={x => {setTitle(x.target.value);debouncedAutosave();}} />
+                        <AutoResizableTextarea autoFocus placeholder="Tulis Judul Disini" className="mb-12 w-full mt-8 h-12 font-sans text-xl sm:text-2xl lg:text-4xl font-bold focus:border-none focus:outline-none" value={title} onChange={x => {setTitle(x.target.value);}} />
                         <Editor
                             apiKey='5giff1qn36x3xf186a0i7l6qagfzedlzzgs73ecj10eddt3n'
                             init={{
@@ -172,16 +129,11 @@ export default function NewPost() {
                             onInit={(evt, editor) => setText(editor.getContent({ format: "text" }))}
                             value={value}
                             initialValue="Isi Konten Berita." />
-                        <Button className="mt-4 mr-2" onClick={saveDraft}>
-                            <Save className="mr-1 w-4 h-4" />Simpan Draft</Button>
-                        <Button variant="outline" onClick={publish}>
-                            <Send className="mr-1 w-4 h-4" />Publish</Button>
+                        <Button className="mt-4" variant="outline" onClick={publish}>
+                            <Send className="mr-1 w-4 h-4" />Save</Button>
                         <span style={{ marginLeft: "95%", marginTop: "-20px" }}>{saveState}</span>
                     </div>
-                </TabsContent>
-                <TabsContent value="podcast" className="px-8 inline-block">
-                </TabsContent>
-            </Tabs>
+                </div>
         </div>
     </>)
 }

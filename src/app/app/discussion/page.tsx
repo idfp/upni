@@ -198,7 +198,7 @@ export default function Discussion() {
                 <Editor
                     apiKey='5giff1qn36x3xf186a0i7l6qagfzedlzzgs73ecj10eddt3n'
                     init={{
-                        plugins: 'anchor autolink charmap codesample emoticons image link lists searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown',
+                        plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount linkchecker',
                         toolbar: 'bold italic underline strikethrough | link | checklist numlist bullist ',
                         tinycomments_mode: 'embedded',
                         menubar: '',

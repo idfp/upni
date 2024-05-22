@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation'
+import { getCookie } from "@/lib/getCookie";
 export default function Home() {
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
@@ -49,6 +50,12 @@ export default function Home() {
     }
     return setErrorRegister("Register gagal")
   }
+  useEffect(()=>{
+    const token = getCookie("token")
+    if(token.length > 0){
+      router.push("/app")
+    }
+  }, [])
   return (
     <div className="w-full overflow-hidden bg-green-50 flex flex-col items-center justify-center pb-16 -my-16">
       <div className="absolute inset-0 w-full h-full bg-green-50 z-20 [mask-image:radial-gradient(transparent,transparent)] pointer-events-none" />

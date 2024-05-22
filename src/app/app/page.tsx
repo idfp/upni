@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { removeHtmlTags } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { getCookie } from "@/lib/getCookie";
 import { User, defaultUser } from "@/class/user"
 import { Post } from "@/class/post";
-import { removeHtmlTags } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
@@ -62,7 +62,6 @@ export default function App() {
                 method: "GET",
                 credentials: "include"
             })).json()
-            console.log(posts)
             posts.forEach((post: Post, id: number)=>{
                 console.log(post)
                 const dateVariable: Date = new Date(post.createdAt);

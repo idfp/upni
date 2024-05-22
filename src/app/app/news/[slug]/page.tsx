@@ -106,12 +106,13 @@ export default function News({ params }: { params: { slug: string } }) {
             } else {
                 setTimediff(seconds + " seconds ago.")
             }
-            const comments = await (await fetch("/api/comments?type=post&id=" + id, {
+            let comments = await (await fetch("/api/comments?type=post&id=" + id, {
                 method: "GET",
                 credentials: "include"
             })).json()
-            setComments(comments)
-            
+            console.log(comments)
+            comments.reverse()
+            console.log(comments)
             comments.forEach((comment:Comment, id) => {
                 const dateVariable: Date = new Date(comment.createdAt);
                 const currentTime: Date = new Date();
@@ -146,6 +147,7 @@ export default function News({ params }: { params: { slug: string } }) {
                     comments[id].timediff = seconds + " seconds ago."
                 }
             })
+            setComments(comments)
 
             const liked = await (await fetch("/api/likes?type=post&id=" + id, {
                 method: "GET",

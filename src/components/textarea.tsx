@@ -1,8 +1,14 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 const AutoResizableTextarea = ({onChange, ...props}) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-
+    useEffect(()=>{
+        const textarea = textareaRef.current;
+        if (textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+    }, [props.value])
     const handleTextareaInput = (x) => {
         if(onChange != null){
             onChange(x)

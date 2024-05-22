@@ -181,7 +181,7 @@ export default function Discussion({ params }: { params: { slug: string } }) {
                             post?.pictures.map((picture, ind) => {
                                 return <>
                                     <CarouselItem key={ind}>
-                                        <img src={picture} style={{ maxHeight:"80vh"}} className="mx-auto my-auto" />
+                                        <img src={picture} style={{ maxHeight:"80vh", minWidth:"45vw"}} className="mx-auto my-auto" />
                                     </CarouselItem>
                                 </>
                             })

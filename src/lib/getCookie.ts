@@ -1,4 +1,4 @@
-export function getCookie(cname:string):string {
+export function getCookie(cname: string): string {
     let name = cname + "=";
     let decodedCookie = decodeURIComponent(document.cookie);
     let ca = decodedCookie.split(';');
@@ -12,4 +12,9 @@ export function getCookie(cname:string):string {
         }
     }
     return "";
+}
+
+export function deleteCookie(name) {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`;
 }
