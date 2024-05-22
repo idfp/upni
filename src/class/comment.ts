@@ -8,4 +8,5 @@ export type Comment = {
     role: string;
     isUpnMember: boolean;
     profilePicture: string;
+    timediff: string;
 }
