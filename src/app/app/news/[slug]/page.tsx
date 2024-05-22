@@ -110,9 +110,7 @@ export default function News({ params }: { params: { slug: string } }) {
                 method: "GET",
                 credentials: "include"
             })).json()
-            console.log(comments)
             comments.reverse()
-            console.log(comments)
             comments.forEach((comment:Comment, id) => {
                 const dateVariable: Date = new Date(comment.createdAt);
                 const currentTime: Date = new Date();

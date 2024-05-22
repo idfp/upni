@@ -9,7 +9,7 @@ import AutoResizableTextarea from "@/components/textarea"
 import { base64ArrayBuffer } from "@/lib/buffertobase64"
 import { Button } from "@/components/ui/button";
 import { Save, Send, Pencil } from "lucide-react";
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { toast } from "sonner"
 import { Post } from "@/class/post";
 
@@ -30,7 +30,6 @@ export default function EditPost({ params }: { params: { slug: string } }) {
     const [saveState, setSaveState] = useState("Saved")
     const [id, setId] = useState(-1)
     const router = useRouter()
-    const searchParams = useSearchParams()
     useEffect(() => {
         (async () => {
             const postid = params.slug

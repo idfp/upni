@@ -1,5 +1,5 @@
 "use client"
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from "react"
 import { Post } from '@/class/post'
 import { Podcast } from '@/class/podcast'

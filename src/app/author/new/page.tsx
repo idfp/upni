@@ -12,6 +12,7 @@ import { Save, Send, Pencil } from "lucide-react";
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from "sonner"
 import { Post } from "@/class/post";
+import { Suspense } from 'react'
 
 const Overlay = () => {
     return (
@@ -22,7 +23,7 @@ const Overlay = () => {
 };
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
     let timeout: ReturnType<typeof setTimeout> | null;
-    return function(this: ThisParameterType<T>, ...args: Parameters<T>) {
+    return function (this: ThisParameterType<T>, ...args: Parameters<T>) {
         if (timeout !== null) {
             clearTimeout(timeout);
         }
@@ -33,8 +34,11 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (.
     };
 }
 
+export default function New() {
+    return (<Suspense><NewPost /></Suspense>)
+}
 
-export default function NewPost() {
+function NewPost() {
     const [title, setTitle] = useState("Judul")
     const [header, setHeader] = useState("/add-image.jpg")
     const inputRef = useRef<HTMLInputElement>(null)
@@ -50,7 +54,7 @@ export default function NewPost() {
             if (draftid === null) return
             if (isNaN(Number.parseInt(draftid))) return
             setId(Number.parseInt(draftid))
-            const res:Post = await (await fetch("/api/draft?id=" + draftid, {
+            const res: Post = await (await fetch("/api/draft?id=" + draftid, {
                 method: "GET",
                 credentials: "include"
             })).json()
@@ -64,10 +68,10 @@ export default function NewPost() {
     const saveDraft = async () => {
         setSaveState("Saving...")
         let method = "POST"
-        if(id !== -1){
+        if (id !== -1) {
             method = "PUT"
         }
-        const res = await (await fetch("/api/draft?id="+id, {
+        const res = await (await fetch("/api/draft?id=" + id, {
             body: JSON.stringify({
                 body: value,
                 header,
@@ -78,7 +82,7 @@ export default function NewPost() {
         })).json()
         if (res.status === "ok") {
             toast("Berhasil menyimpan draft.")
-            if(res.id){
+            if (res.id) {
                 setId(Number.parseInt(res.id))
             }
             return setSaveState("Saved")
@@ -155,8 +159,8 @@ export default function NewPost() {
                             </AspectRatio>
                             <Overlay />
                         </div>
-        
-                        <AutoResizableTextarea autoFocus placeholder="Tulis Judul Disini" className="mb-12 w-full mt-8 h-12 font-sans text-xl sm:text-2xl lg:text-4xl font-bold focus:border-none focus:outline-none" value={title} onChange={x => {setTitle(x.target.value);debouncedAutosave();}} />
+
+                        <AutoResizableTextarea autoFocus placeholder="Tulis Judul Disini" className="mb-12 w-full mt-8 h-12 font-sans text-xl sm:text-2xl lg:text-4xl font-bold focus:border-none focus:outline-none" value={title} onChange={x => { setTitle(x.target.value); debouncedAutosave(); }} />
                         <Editor
                             apiKey='5giff1qn36x3xf186a0i7l6qagfzedlzzgs73ecj10eddt3n'
                             init={{
