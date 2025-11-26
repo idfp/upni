@@ -12,7 +12,22 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url)
     const type = searchParams.get('type')
     if (type !== null && type === "discussion") {
-        const res = await conn.query("SELECT posts.id as id, posts.title as title, posts.content as content, users.name as author, posts.pictures as pictures, posts.likes as likes, posts.comments as comments, posts.views as views, posts.created_at as \"createdAt\", posts.category as category, users.is_upn_member as \"isUpnMember\", users.profile_picture as \"profilePicture\", users.role as role FROM posts INNER JOIN users ON posts.author = users.id WHERE category = 'DISCUSSION' ORDER BY posts.id DESC LIMIT 20");
+        const res = await conn.query(`SELECT 
+        posts.id as id, 
+        posts.title as title, 
+        posts.content as content, 
+        users.name as author, 
+        posts.pictures as pictures, 
+        posts.likes as likes, 
+        posts.comments as comments, 
+        posts.views as views, 
+        posts.created_at as \"createdAt\", 
+        posts.category as category, 
+        users.is_upn_member as \"isUpnMember\", 
+        users.profile_picture as \"profilePicture\", 
+        users.role as role 
+        FROM posts INNER JOIN users ON posts.author = users.id 
+        WHERE category = 'DISCUSSION' ORDER BY posts.id DESC LIMIT 20`);
         const posts = res.rows
         const responses = posts.map(post => {
             post.pictures = JSON.parse(post.pictures)
@@ -97,9 +112,10 @@ export async function POST(request: NextRequest) {
                     console.log(error)
                     return Response.json({ status: "error" })
                 }
-                paths.push(`https://cozwvhycpghwqquezuxs.supabase.co/storage/v1/object/public/store/${data?.path}`)
+                paths.push(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/store/${data?.path}`)
             }
-            const query = "INSERT INTO posts(title, content, author, pictures, likes, comments, views, category) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id"
+            const query = `INSERT INTO posts(title, content, author, pictures, likes, comments, views, category) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`
             const res = await conn.query(query, ["", content, claims.id, JSON.stringify(paths), 0, 0, 0, "DISCUSSION"])
             const postId = res.rows[0].id
             return Response.json({
@@ -136,7 +152,7 @@ export async function PUT(req: NextRequest){
     if (token === undefined)
         throw Error
     const claims = decodeJwt(token)
-    const { id, content, title } = await req.json()
+    const { id, content, title, header } = await req.json()
     if (id === undefined || id === null) {
         return Response.json({ status: "fail" })
     }
@@ -146,8 +162,8 @@ export async function PUT(req: NextRequest){
     let query = "UPDATE posts SET content = $1 WHERE id = $2 AND author = $3"
     let data = [content, id, claims.id]
     if(title !== undefined && title !== null){
-        query = "UPDATE posts SET content = $1, title = $2 WHERE id = $3 AND author = $4"
-        data = [content, title, id, claims.id]
+        query = "UPDATE posts SET content = $1, title = $2, pictures = $3 WHERE id = $4 AND author = $5"
+        data = [content, title, JSON.stringify([header]), id, claims.id]
     }
     const res = await conn.query(query, data)
     return Response.json({status: "ok"}) 

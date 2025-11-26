@@ -14,7 +14,7 @@ export type User = {
     id: number;
     email: string;
     username: string;
-    name: string;
+    name: string; 
     isUPNMember: boolean;
     profilePicture: string;
     createdAt: Date;

@@ -16,7 +16,18 @@ export async function GET(req: Request) {
         return Response.json({ status: "Error", message: "Please provide type" })
     }
     if(type === "post"){
-        const res = await conn.query("SELECT comments.id as id, comments.content as content, comments.created_at as \"createdAt\", comments.posttype as posttype, users.name as author, users.id as authorid, users.role as role, users.is_upn_member as \"isUpnMember\", users.profile_picture as \"profilePicture\"  FROM comments JOIN users ON comments.author = users.id WHERE postid = $1", [id]);
+        const res = await conn.query(`SELECT 
+        comments.id as id, 
+        comments.content as content, 
+        comments.created_at as \"createdAt\", 
+        comments.posttype as posttype, 
+        users.name as author, 
+        users.id as authorid, 
+        users.role as role, 
+        users.is_upn_member as \"isUpnMember\", 
+        users.profile_picture as \"profilePicture\"  
+        FROM comments JOIN users ON comments.author = users.id 
+        WHERE postid = $1`, [id]);
         const comments = res.rows
         
         return Response.json(comments)
@@ -34,10 +45,12 @@ export async function POST(request: NextRequest) {
         if(token === undefined)
             throw Error 
         const claims = decodeJwt(token)
-        let query = "INSERT INTO comments (author, content, posttype, postid) VALUES ($1, $2, $3, $4) RETURNING id, created_at"
+        let query = `INSERT INTO comments (author, content, posttype, postid) 
+        VALUES ($1, $2, $3, $4) RETURNING id, created_at`
         let posttype = "NEWS"
         if(type === "podcast"){
-            query = "INSERT INTO comments (author, content, posttype, podcastid) VALUES ($1, $2, $3, $4) RETURNING id, created_at"
+            query = `INSERT INTO comments (author, content, posttype, podcastid) 
+        VALUES ($1, $2, $3, $4) RETURNING id, created_at`
             posttype = "PODCAST"
         }
         const res = await conn.query(query, [claims.id, content, posttype, id])

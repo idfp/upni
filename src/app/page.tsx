@@ -17,8 +17,8 @@ export default function Home() {
   const [password, setPassword] = useState("")
   const [password2, setPassword2] = useState("")
   const [errorLogin, setErrorLogin] = useState("")
-  const router = useRouter()
   const [errorRegister, setErrorRegister] = useState("")
+  const router = useRouter()
   async function login(){
     setErrorLogin("")
     const req = await fetch("/api/login", {

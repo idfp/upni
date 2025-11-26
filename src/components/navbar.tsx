@@ -83,8 +83,8 @@ export const Navbar: React.FC<NavbarProps> = ({ query = "" }) => {
     return (
         <Dialog>
             <div className="w-auto m-2 border-gray-300 border rounded-md h-14 flex flex-row p-1 px-4 items-center">
-                <Link href="/app" className="grow">
-                    <Image src="/logo-small.png" width={40} height={30} alt={"logo"} />
+                <Link href="/app" className="grow-2">
+                    <Image className="ml-4" src="/logo-small.png" width={40} height={30} alt={"logo"} />
                 </Link>
                 <div className="grow self-center flex flex-row items-center content-center">
                     <Link href="/app" className="self-center flex-1">

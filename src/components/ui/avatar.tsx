@@ -16,7 +16,6 @@ const Avatar = React.forwardRef<
       className
     )}
     style={{borderRadius:"9999px"}}
-
     {...props}
   />
 ))

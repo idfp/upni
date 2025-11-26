@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
         return Response.json({ status: "error" })
     }
     const response = NextResponse.json(
-        { status: "ok", location: `https://cozwvhycpghwqquezuxs.supabase.co/storage/v1/object/public/store/${claims.id}-${year}${month}${day}${hour}${minute}${second}-attachment.png` },
+        { status: "ok", location: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/store/${claims.id}-${year}${month}${day}${hour}${minute}${second}-attachment.png` },
         { status: 200, headers: { "content-type": "application/json" } }
     );
     

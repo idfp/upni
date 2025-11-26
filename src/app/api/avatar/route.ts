@@ -41,16 +41,16 @@ export async function POST(req: NextRequest) {
         return Response.json({ status: "error" })
     }
     const response = NextResponse.json(
-        { status: "ok", link: `https://cozwvhycpghwqquezuxs.supabase.co/storage/v1/object/public/store/${claims.id}-${year}${month}${day}${hour}${minute}${second}-avatar.png` },
+        { status: "ok", link: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/store/${claims.id}-${year}${month}${day}${hour}${minute}${second}-avatar.png` },
         { status: 200, headers: { "content-type": "application/json" } }
     );
-    conn.query("UPDATE users SET profile_picture = $1 WHERE id = $2", [`https://cozwvhycpghwqquezuxs.supabase.co/storage/v1/object/public/store/${claims.id}-${year}${month}${day}${hour}${minute}${second}-avatar.png`, claims.id])
+    conn.query("UPDATE users SET profile_picture = $1 WHERE id = $2", [`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/store/${claims.id}-${year}${month}${day}${hour}${minute}${second}-avatar.png`, claims.id])
     const jwt = await new SignJWT({
         id: claims.id,
         email: claims.email,
         username: claims.username,
         name: claims.name,
-        profilePicture: `https://cozwvhycpghwqquezuxs.supabase.co/storage/v1/object/public/store/${claims.id}-${year}${month}${day}${hour}${minute}${second}-avatar.png`,
+        profilePicture: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/store/${claims.id}-${year}${month}${day}${hour}${minute}${second}-avatar.png`,
         isUPNMember: claims.isUPNMember,
         createdAt: claims.createdAt,
         role: claims.role
