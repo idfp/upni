@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
             for (let ind = 0; ind < files.length; ind++) {
                 const file: File = files[ind]
                 const { data, error } = await supabase.storage
-                    .from('store')
+                    .from('storage')
                     .upload(`${claims.id}-${year}${month}${day}${hour}${minute}${second}-attachment${ind}.png`, file, {
                         cacheControl: "0",
                         upsert: true
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
                     console.log(error)
                     return Response.json({ status: "error" })
                 }
-                paths.push(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/store/${data?.path}`)
+                paths.push(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/storage/${data?.path}`)
             }
             const query = `INSERT INTO posts(title, content, author, pictures, likes, comments, views, category) 
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`

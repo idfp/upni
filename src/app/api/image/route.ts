@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
     const file: File = arrayBufferToFile(imageAb, claims.id + "-attachment.png", "image/png")
     const { data, error } = await supabase.storage
-        .from('store')
+        .from('storage')
         .upload(`${claims.id}-${year}${month}${day}${hour}${minute}${second}-attachment.png`, file, {
             cacheControl: "0",
             upsert: true
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
         return Response.json({ status: "error" })
     }
     const response = NextResponse.json(
-        { status: "ok", location: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/store/${claims.id}-${year}${month}${day}${hour}${minute}${second}-attachment.png` },
+        { status: "ok", location: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/storage/${claims.id}-${year}${month}${day}${hour}${minute}${second}-attachment.png` },
         { status: 200, headers: { "content-type": "application/json" } }
     );
     
