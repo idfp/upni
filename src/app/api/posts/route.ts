@@ -30,7 +30,6 @@ export async function GET(req: Request) {
         WHERE category = 'DISCUSSION' ORDER BY posts.id DESC LIMIT 20`);
         const posts = res.rows
         const responses = posts.map(post => {
-            post.pictures = JSON.parse(post.pictures)
             return post
         })
         return Response.json(responses)
@@ -43,7 +42,6 @@ export async function GET(req: Request) {
         const res = await conn.query("SELECT posts.id as id, posts.title as title, posts.content as content, users.name as author, posts.pictures as pictures, posts.likes as likes, posts.comments as comments, posts.views as views, posts.created_at as \"createdAt\", posts.category as category, users.is_upn_member as \"isUpnMember\", users.profile_picture as \"profilePicture\", users.role as role FROM posts INNER JOIN users ON posts.author = users.id WHERE posts.author = $1 ORDER BY posts.id DESC LIMIT 20", [user]);
         const posts = res.rows
         const responses = posts.map(post => {
-            post.pictures = JSON.parse(post.pictures)
             return post
         })
         return Response.json(responses)
@@ -57,7 +55,6 @@ export async function GET(req: Request) {
         conn.query("UPDATE posts SET views = views + 1 WHERE id = $1", [id])
         const posts = res.rows
         const responses = posts.map(post => {
-            post.pictures = JSON.parse(post.pictures)
             return post
         })
 
@@ -67,7 +64,6 @@ export async function GET(req: Request) {
     const res = await conn.query("SELECT posts.id as id, posts.title as title, posts.content as content, users.name as author, posts.pictures as pictures, posts.likes as likes, posts.comments as comments, posts.views as views, posts.created_at as \"createdAt\", posts.category as category, users.is_upn_member as \"isUpnMember\", users.profile_picture as \"profilePicture\", users.role as role FROM posts INNER JOIN users ON posts.author = users.id WHERE category = 'NEWS' ORDER BY posts.id DESC LIMIT 20");
     const posts = res.rows
     const responses = posts.map(post => {
-        post.pictures = JSON.parse(post.pictures)
         return post
     })
     return Response.json(responses)
